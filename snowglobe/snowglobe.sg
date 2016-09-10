@@ -1,0 +1,75 @@
+snowglobe {
+	
+
+	module("env") {
+		// Some configuration that can be shared
+
+        docker_provider {    
+            host = "unix:///var/run/docker.sock"
+        }
+    }
+
+    module("app")
+    {
+		 imports {
+	        using module('env').docker_provider(null);
+	    }
+
+	    docker_container("frontend") {
+	     	image = "${docker_image("frontend").name}"
+	     	ports {
+	            internal = 80
+	            external = 8080
+	        }
+
+	        command = [ "/bin/containerpilot", "-config", "file:///etc/containerpilot/containerpilot.json", "nginx", "-g", "daemon off;" ]
+
+	        links = ["consul:${docker_container('consul').name}"]
+	        restart = "always"
+	    }
+
+	    docker_container("hello") {
+	    	image = "${docker_image("app1").name}"
+	    	links = ["consul:${docker_container('consul').name}"]
+	    }
+
+	    docker_container("world") {
+	       image = "${docker_image("app2").name}"
+	    	links = ["consul:${docker_container('consul').name}"]
+	    }
+
+	     docker_container("consul") {
+	        image = "${docker_image("consul").name}"
+	        name = "consul"
+	        restart = "always"
+
+	        ports {
+	            internal = 8500
+	            external = 8500
+	        }
+
+	        command = ["agent", "-dev", "-client", "0.0.0.0"]
+	    }
+
+	    docker_image("app1")
+	    {
+	        name = "hello-world-hello"
+	    }
+
+	    docker_image("app2")
+	    {
+	        name = "hello-world-world"
+	    }
+
+		docker_image("frontend")
+	    {
+	        name = "hello-world-frontend"
+	    }
+
+	    docker_image("consul")
+	    {
+	        name = "consul:v0.6.4"
+	    }
+    }
+
+}
