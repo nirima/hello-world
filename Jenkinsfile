@@ -25,5 +25,6 @@ node('docker') {
      	tagsString: "hello-world-frontend",
      	pushOnSuccess: false]);    
 
-    step([$class: 'SnowGlobeStep', action: 'create', source: [$class: 'GlobeSourceFile', file: 'snowglobe/snowglobe.sg', name: 'main']]) 	
+     snowglobe().fromFile("snowglobe/snowglobe.sg")
+          .register().exec();          
 }

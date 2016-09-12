@@ -11,7 +11,7 @@ snowglobe {
 
     module("app")
     {
-		 imports {
+		imports {
 	        using module('env').docker_provider(null);
 	    }
 
@@ -19,7 +19,7 @@ snowglobe {
 	     	image = "${docker_image("frontend").name}"
 	     	ports {
 	            internal = 80
-	            external = 8080
+	            external = 8888
 	        }
 
 	        command = [ "/bin/containerpilot", "-config", "file:///etc/containerpilot/containerpilot.json", "nginx", "-g", "daemon off;" ]
