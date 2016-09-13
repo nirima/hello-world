@@ -67,9 +67,14 @@ snowglobe {
 	    }
 
 	    docker_image("consul")
-	    {
-	        name = "consul:v0.6.4"
-	    }
+        {
+             name = "${docker_registry_image("consul").name}"
+             pull_trigger = "${docker_registry_image("consul").sha256_digest}"
+        }
+
+        docker_registry_image("consul") {
+            name = "consul:v0.6.4"
+        }
     }
 
 }
