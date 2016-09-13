@@ -1,30 +1,25 @@
 node('docker') {
 	// Build the Jenkinsfiles
 
-	 stage name: "Checkout";
+     stage name: "Checkout";
      checkout scm;
 
-     step([$class: 'DockerBuilderPublisher', 
-     	cleanImages: true, 
-     	cleanupWithJenkinsJobDelete: true, 
-     	dockerFileDirectory: 'hello', 
-     	tagsString: "hello-world-hello",
-     	pushOnSuccess: false]);
+     stage name: "Build Docker Images"
+     build_docker_image('hello');
+     build_docker_image('world');
+     build_docker_image('frontend');
+     
 
-     step([$class: 'DockerBuilderPublisher', 
-     	cleanImages: true, 
-     	cleanupWithJenkinsJobDelete: true, 
-     	dockerFileDirectory: 'world', 
-     	tagsString: "hello-world-world",
-     	pushOnSuccess: false]);
-
-	step([$class: 'DockerBuilderPublisher', 
-     	cleanImages: true, 
-     	cleanupWithJenkinsJobDelete: true, 
-     	dockerFileDirectory: 'frontend', 
-     	tagsString: "hello-world-frontend",
-     	pushOnSuccess: false]);    
-
+     stage name: "Register Snowglobe"
      snowglobe().fromFile("snowglobe/snowglobe.sg")
           .register().exec();          
+}
+
+def build_docker_image(String name) {
+     step([$class: 'DockerBuilderPublisher', 
+          cleanImages: false, 
+          cleanupWithJenkinsJobDelete: true, 
+          dockerFileDirectory: name, 
+          tagsString: "hello-world-${name}",
+          pushOnSuccess: false]);
 }
