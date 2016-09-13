@@ -2,17 +2,17 @@ snowglobe {
 	
 
 	module("env") {
-		// Some configuration that can be shared
+		
 
-        docker_provider {    
-            host = "unix:///var/run/docker.sock"
+        jenkins_docker_provider {    
+        	cloudName = 'docker'    
         }
     }
 
     module("app")
     {
 		imports {
-	        using module('env').docker_provider(null);
+	        using module('env').docker_provider();
 	    }
 
 	    docker_container("frontend") {
